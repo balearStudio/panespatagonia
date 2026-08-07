@@ -1,0 +1,312 @@
+---
+const EMAIL = 'panespatagonia@gmail.com';
+const PHONE_DISPLAY = '+34 611 650 655';
+const PHONE_RAW = '34611650655';
+
+const channels = [
+  {
+    label: 'WhatsApp',
+    value: PHONE_DISPLAY,
+    href: `https://wa.me/${PHONE_RAW}`,
+    note: 'Respuesta el mismo día laborable',
+    external: true,
+  },
+  {
+    label: 'Email',
+    value: EMAIL,
+    href: `mailto:${EMAIL}`,
+    note: 'Para tarifas y pedidos grandes',
+    external: false,
+  },
+  {
+    label: 'Instagram',
+    value: '@panespatagonia',
+    href: 'https://www.instagram.com/panespatagonia',
+    note: 'El día a día del obrador',
+    external: true,
+  },
+];
+---
+
+<section class="contacto section" id="contacto" aria-labelledby="contacto-title">
+  <div class="wrap contacto__grid">
+    <div class="contacto__intro">
+      <p class="eyebrow" data-reveal>Contacto</p>
+      <h2 id="contacto-title" class="contacto__title" data-reveal style="--reveal-delay: 60ms">
+        ¿Probamos<br />tu pan?
+      </h2>
+      <p class="lede" data-reveal style="--reveal-delay: 120ms">
+        Cuéntanos qué necesitas y te preparamos una caja de muestra para tu
+        cocina. Sin compromiso.
+      </p>
+
+      <ul class="contacto__channels">
+        {
+          channels.map((c, i) => (
+            <li data-reveal style={`--reveal-delay: ${180 + i * 80}ms`}>
+              <a
+                href={c.href}
+                target={c.external ? '_blank' : undefined}
+                rel={c.external ? 'noopener' : undefined}
+              >
+                <span class="contacto__channel-label">{c.label}</span>
+                <span class="contacto__channel-value">{c.value}</span>
+                <span class="contacto__channel-note">{c.note}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    {/*
+      Sitio estático: el formulario abre el correo del visitante con los datos
+      ya rellenados. Para recibirlos en un buzón sin salir de la web, cambia
+      `data-mailto` por un endpoint tipo Formspree en el `action` del <form>.
+    */}
+    <form class="contacto__form" data-contact-form data-mailto={EMAIL} data-reveal>
+      <div class="field">
+        <label for="f-nombre">Nombre y comercio</label>
+        <input id="f-nombre" name="nombre" type="text" required autocomplete="organization" />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="f-tel">Teléfono</label>
+          <input id="f-tel" name="telefono" type="tel" required autocomplete="tel" />
+        </div>
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" required autocomplete="email" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="f-msg">Mensaje</label>
+        <textarea id="f-msg" name="mensaje" rows="4" required
+          placeholder="Cuántos panes a la semana, formato y ciudad."></textarea>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" name="consent" required />
+        <span>
+          Acepto que estos datos se almacenen y procesen con el fin de
+          establecer contacto. Puedo revocar mi consentimiento en cualquier
+          momento.
+        </span>
+      </label>
+
+      <button class="btn contacto__submit" type="submit">Enviar mensaje</button>
+
+      <p class="contacto__status" data-form-status role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<style>
+  .contacto {
+    background: var(--ink-2);
+    border-top: 1px solid var(--ink-3);
+  }
+
+  .contacto__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+  }
+
+  .contacto__title {
+    font-size: var(--step-5);
+    margin-bottom: 1.5rem;
+  }
+
+  .contacto__channels {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    border-top: 1px solid var(--ink-3);
+  }
+
+  .contacto__channels a {
+    display: grid;
+    grid-template-columns: minmax(6rem, 8rem) 1fr;
+    grid-template-areas: 'label value' 'label note';
+    gap: 0 1rem;
+    padding: 1.15rem 0;
+    border-bottom: 1px solid var(--ink-3);
+    text-decoration: none;
+    transition: padding-left 0.3s var(--ease-out);
+  }
+
+  .contacto__channels a:hover {
+    padding-left: 0.6rem;
+  }
+
+  .contacto__channel-label {
+    grid-area: label;
+    align-self: center;
+    font-size: var(--step--1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cream-faint);
+  }
+
+  .contacto__channel-value {
+    grid-area: value;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--crust);
+  }
+
+  .contacto__channel-note {
+    grid-area: note;
+    font-size: var(--step--1);
+    color: var(--cream-faint);
+  }
+
+  /* --- Formulario --- */
+  .contacto__form {
+    display: grid;
+    gap: 1.15rem;
+    align-content: start;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    background: var(--ink);
+    border: 1px solid var(--ink-3);
+    border-radius: var(--radius-lg);
+  }
+
+  .field {
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.15rem;
+  }
+
+  label {
+    font-size: var(--step--1);
+    color: var(--cream-dim);
+  }
+
+  input[type='text'],
+  input[type='tel'],
+  input[type='email'],
+  textarea {
+    width: 100%;
+    padding: 0.8em 0.9em;
+    font: inherit;
+    font-size: var(--step--1);
+    color: var(--cream);
+    background: var(--ink-2);
+    border: 1px solid var(--ink-3);
+    border-radius: var(--radius);
+    transition:
+      border-color 0.25s var(--ease-out),
+      background-color 0.25s var(--ease-out);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--cream-faint);
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--crust);
+    background: color-mix(in srgb, var(--crust) 6%, var(--ink-2));
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 6rem;
+  }
+
+  .consent {
+    display: flex;
+    gap: 0.7rem;
+    align-items: start;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--cream-faint);
+  }
+
+  .consent input {
+    margin-top: 0.25em;
+    accent-color: var(--crust);
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .contacto__submit {
+    justify-self: start;
+    margin-top: 0.5rem;
+  }
+
+  .contacto__status {
+    font-size: var(--step--1);
+    color: var(--crust-soft);
+    min-height: 1.2em;
+  }
+
+  @media (max-width: 900px) {
+    .contacto__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .contacto__title {
+      font-size: var(--step-4);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+
+    .contacto__channels a {
+      grid-template-columns: 1fr;
+      grid-template-areas: 'label' 'value' 'note';
+      gap: 0.15rem;
+    }
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const status = document.querySelector<HTMLElement>('[data-form-status]');
+
+  form?.addEventListener('submit', (event) => {
+    // Si el formulario ya tiene un endpoint propio, se deja pasar tal cual.
+    if (form.getAttribute('action')) return;
+
+    event.preventDefault();
+    const data = new FormData(form);
+    const get = (k: string) => String(data.get(k) ?? '').trim();
+
+    const cuerpo = [
+      `Nombre y comercio: ${get('nombre')}`,
+      `Teléfono: ${get('telefono')}`,
+      `Email: ${get('email')}`,
+      '',
+      get('mensaje'),
+    ].join('\n');
+
+    const to = form.dataset.mailto ?? '';
+    const href =
+      `mailto:${to}` +
+      `?subject=${encodeURIComponent(`Consulta web — ${get('nombre')}`)}` +
+      `&body=${encodeURIComponent(cuerpo)}`;
+
+    window.location.href = href;
+    if (status) {
+      status.textContent =
+        'Abriendo tu gestor de correo… si no se abre, escríbenos a ' +
+        (form.dataset.mailto ?? '');
+    }
+  });
+</script>

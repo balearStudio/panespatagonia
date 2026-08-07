@@ -1,0 +1,108 @@
+---
+const pillars = [
+  {
+    n: '01',
+    title: 'Receta auténtica',
+    text: 'Una fórmula propia, afinada lote a lote, que no cambia según la temporada ni el proveedor.',
+  },
+  {
+    n: '02',
+    title: 'Ingredientes seleccionados',
+    text: 'Harinas, mantequilla y huevo escogidos uno a uno. Sin mejorantes ni atajos industriales.',
+  },
+  {
+    n: '03',
+    title: 'Servicio a hostelería',
+    text: 'Volumen constante, plazos que se cumplen y trato directo con quien amasa tu pedido.',
+  },
+  {
+    n: '04',
+    title: 'Elaboración artesanal',
+    text: 'Formado a mano y fermentación lenta. El tiempo es el ingrediente que no se puede comprar.',
+  },
+];
+---
+
+<section class="pillars section" aria-labelledby="pillars-title">
+  <div class="wrap">
+    <header class="pillars__head">
+      <p class="eyebrow" data-reveal>Por qué Panes Patagonia</p>
+      <h2 id="pillars-title" class="pillars__title" data-reveal style="--reveal-delay: 60ms">
+        Calidad artesanal, sabor único y atención al detalle para restauración
+        exigente.
+      </h2>
+    </header>
+
+    <ol class="pillars__list">
+      {
+        pillars.map((p, i) => (
+          <li class="pillar" data-reveal style={`--reveal-delay: ${i * 90}ms`}>
+            <span class="pillar__n">{p.n}</span>
+            <h3 class="pillar__title">{p.title}</h3>
+            <p class="pillar__text">{p.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .pillars {
+    background: var(--ink-2);
+    border-block: 1px solid var(--ink-3);
+  }
+
+  .pillars__head {
+    max-width: 46rem;
+    margin-bottom: clamp(3rem, 7vw, 5rem);
+  }
+
+  .pillars__title {
+    font-size: var(--step-3);
+    line-height: 1.2;
+    color: var(--cream);
+  }
+
+  .pillars__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: var(--ink-3);
+    border: 1px solid var(--ink-3);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .pillar {
+    background: var(--ink-2);
+    padding: clamp(1.75rem, 3vw, 2.5rem);
+    transition: background-color 0.4s var(--ease-out);
+  }
+
+  .pillar:hover {
+    background: color-mix(in srgb, var(--crust) 7%, var(--ink-2));
+  }
+
+  .pillar__n {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-0);
+    color: var(--crust);
+    margin-bottom: 2.5rem;
+  }
+
+  .pillar__title {
+    font-size: var(--step-2);
+    margin-bottom: 0.75rem;
+  }
+
+  .pillar__text {
+    font-size: var(--step--1);
+    color: var(--cream-dim);
+    line-height: 1.6;
+  }
+</style>

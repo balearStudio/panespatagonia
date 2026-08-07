@@ -1,0 +1,390 @@
+---
+const stages = [
+  {
+    n: '01',
+    title: 'La masa',
+    text: 'Harina, agua y tiempo. Amasado lento hasta conseguir una masa fina, elástica y viva.',
+  },
+  {
+    n: '02',
+    title: 'La fermentación',
+    text: 'Reposo largo y sin prisa. Aquí nace el sabor: la masa gana volumen, aroma y ligereza.',
+  },
+  {
+    n: '03',
+    title: 'El horno',
+    text: 'El calor la levanta de golpe. La superficie se tensa, se sella y empieza a tomar color.',
+  },
+  {
+    n: '04',
+    title: 'El pan',
+    text: 'Corteza dorada y brillante, sésamo tostado y una miga tierna que aguanta la hamburguesa.',
+  },
+];
+---
+
+<section class="bake" id="proceso" aria-labelledby="bake-title">
+  <div class="bake__track" data-bake-track>
+    <div class="bake__stage">
+      <canvas class="bake__canvas" data-bake-canvas aria-hidden="true"></canvas>
+
+      <div class="bake__ui">
+        <div class="wrap bake__grid">
+          <header class="bake__intro">
+            <p class="eyebrow">El proceso</p>
+            <h2 id="bake-title" class="bake__title">De la masa<br />al pan</h2>
+            <p class="bake__hint" data-bake-hint>
+              <span class="bake__hint-arrow" aria-hidden="true"></span>
+              Sigue bajando
+            </p>
+          </header>
+
+          <ol class="bake__steps" data-bake-steps>
+            {
+              stages.map((s, i) => (
+                <li class="bake__step" data-index={i}>
+                  <span class="bake__step-n">{s.n}</span>
+                  <h3 class="bake__step-title">{s.title}</h3>
+                  <p class="bake__step-text">{s.text}</p>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+
+        <div class="bake__meter" aria-hidden="true">
+          <span class="bake__meter-fill" data-bake-meter></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Alternativa legible para lectores de pantalla y sin JavaScript. */}
+  <ol class="bake__fallback">
+    {
+      stages.map((s) => (
+        <li>
+          <h3>
+            {s.n} · {s.title}
+          </h3>
+          <p>{s.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .bake {
+    position: relative;
+    background: var(--ink);
+  }
+
+  .bake__track {
+    height: 460vh;
+  }
+
+  .bake__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .bake__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .bake__ui {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: stretch;
+    pointer-events: none;
+  }
+
+  /* El texto ocupa la columna izquierda; la derecha queda libre para el pan. */
+  .bake__grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'intro .'
+      '.     .'
+      'steps .';
+    column-gap: var(--gutter);
+    padding-block: clamp(6rem, 15vh, 9.5rem) clamp(4rem, 10vh, 6rem);
+  }
+
+  .bake__intro {
+    grid-area: intro;
+  }
+
+  .bake__title {
+    font-size: var(--step-5);
+    margin-bottom: 1.25rem;
+  }
+
+  .bake__hint {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    font-size: var(--step--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cream-faint);
+    transition: opacity 0.5s var(--ease-out);
+  }
+
+  .bake__hint[data-hidden] {
+    opacity: 0;
+  }
+
+  .bake__hint-arrow {
+    width: 1px;
+    height: 2.2rem;
+    background: linear-gradient(var(--crust), transparent);
+    animation: bake-hint 2s var(--ease-out) infinite;
+  }
+
+  @keyframes bake-hint {
+    0%,
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(0.4rem);
+      opacity: 0.35;
+    }
+  }
+
+  /* --- Fases: se cruzan en el mismo hueco --- */
+  .bake__steps {
+    grid-area: steps;
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    min-height: 13rem;
+    display: grid;
+    align-self: end;
+  }
+
+  .bake__step {
+    grid-area: 1 / 1;
+    align-self: end;
+    max-width: 30rem;
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+      opacity 0.7s var(--ease-out),
+      transform 0.7s var(--ease-out);
+  }
+
+  .bake__step[data-active] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .bake__step-n {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--crust);
+    margin-bottom: 0.6rem;
+  }
+
+  .bake__step-title {
+    font-size: var(--step-3);
+    margin-bottom: 0.75rem;
+  }
+
+  .bake__step-text {
+    color: var(--cream-dim);
+    font-size: var(--step-0);
+  }
+
+  /* --- Barra de progreso del horneado --- */
+  .bake__meter {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: clamp(1.5rem, 4vh, 3rem);
+    height: 2px;
+    background: color-mix(in srgb, var(--cream) 12%, transparent);
+    overflow: hidden;
+  }
+
+  .bake__meter-fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--crust-deep), var(--crust), var(--crust-soft));
+  }
+
+  /* Solo visible sin JS o para lectores de pantalla. */
+  .bake__fallback {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  @media (max-width: 860px) {
+    .bake__grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'intro'
+        '.'
+        'steps';
+      padding-block: clamp(5rem, 13vh, 7rem) clamp(3.5rem, 10vh, 5rem);
+    }
+
+    .bake__title {
+      font-size: var(--step-4);
+    }
+
+    .bake__hint {
+      display: none;
+    }
+
+    .bake__steps {
+      align-self: end;
+      min-height: 11.5rem;
+    }
+
+    .bake__step-title {
+      font-size: var(--step-2);
+    }
+  }
+
+  /*
+    Sin scrub: la sección pasa a flujo normal — el pan ya horneado arriba y
+    las cuatro fases debajo como lista corrida.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    .bake__track {
+      height: auto;
+    }
+
+    .bake__stage {
+      position: static;
+      height: auto;
+      overflow: visible;
+      padding-block: var(--section-y);
+    }
+
+    .bake__canvas {
+      position: relative;
+      height: min(58vh, 26rem);
+    }
+
+    .bake__ui {
+      position: static;
+      display: block;
+    }
+
+    .bake__grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        'intro'
+        'steps';
+      row-gap: clamp(2.5rem, 6vw, 4rem);
+      padding-block: 0 0;
+    }
+
+    .bake__steps {
+      display: grid;
+      gap: clamp(2rem, 4vw, 2.75rem);
+      min-height: 0;
+      align-self: auto;
+    }
+
+    .bake__step {
+      grid-area: auto;
+      align-self: auto;
+      opacity: 1;
+      transform: none;
+      max-width: var(--measure);
+    }
+
+    .bake__hint,
+    .bake__meter {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { createBreadScene } from '../scripts/bread.js';
+
+  const track = document.querySelector<HTMLElement>('[data-bake-track]');
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-bake-canvas]');
+  const stepList = document.querySelector<HTMLElement>('[data-bake-steps]');
+  const meter = document.querySelector<HTMLElement>('[data-bake-meter]');
+  const hint = document.querySelector<HTMLElement>('[data-bake-hint]');
+
+  if (track && canvas && stepList) {
+    const steps = Array.from(stepList.querySelectorAll<HTMLElement>('.bake__step'));
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const setStage = (i: number) => {
+      steps.forEach((el, idx) => el.toggleAttribute('data-active', idx === i));
+    };
+
+    const scene = createBreadScene(canvas, { onStage: setStage });
+
+    const readProgress = () => {
+      const total = track.offsetHeight - window.innerHeight;
+      if (total <= 0) return 0;
+      return Math.min(1, Math.max(0, -track.getBoundingClientRect().top / total));
+    };
+
+    const sync = () => {
+      const p = readProgress();
+      scene.setProgress(p);
+      if (meter) meter.style.width = `${p * 100}%`;
+      if (hint) hint.toggleAttribute('data-hidden', p > 0.03);
+    };
+
+    // Con movimiento reducido no hay scrub: se pinta el pan ya horneado.
+    if (reduced.matches) {
+      setStage(3);
+      scene.setCentered(true);
+      const paint = () => {
+        scene.resize();
+        scene.snap(1);
+      };
+      paint();
+      window.addEventListener('resize', paint);
+    } else {
+      setStage(0);
+      scene.resize();
+      scene.snap(readProgress());
+      sync();
+
+      window.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', () => {
+        scene.resize();
+        sync();
+      });
+
+      // El bucle solo corre cuando la sección está en pantalla.
+      const io = new IntersectionObserver(
+        ([entry]) => (entry.isIntersecting ? scene.start() : scene.stop()),
+        { rootMargin: '120px' }
+      );
+      io.observe(track);
+    }
+  }
+</script>

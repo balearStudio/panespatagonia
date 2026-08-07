@@ -1,0 +1,155 @@
+---
+import { Image } from 'astro:assets';
+import pan from '../assets/pan-en-mano.jpg';
+
+const specs = [
+  { k: 'Formato', v: 'Bollo de 90 g y 120 g' },
+  { k: 'Acabado', v: 'Con sésamo o liso, brillo de huevo' },
+  { k: 'Entrega', v: 'Fresco del día o ultracongelado' },
+  { k: 'Pedido', v: 'Mínimo por caja, sin permanencia' },
+];
+---
+
+<section class="product section" id="producto">
+  <div class="wrap product__grid">
+    <figure class="product__media" data-reveal>
+      <Image
+        src={pan}
+        alt="Panadero sosteniendo un pan de hamburguesa recién horneado"
+        widths={[480, 768, 1100]}
+        sizes="(max-width: 900px) 100vw, 45vw"
+        quality={80}
+      />
+      <figcaption>Bollo brioche, corteza fina y miga tierna</figcaption>
+    </figure>
+
+    <div class="product__body">
+      <p class="eyebrow" data-reveal>El pan</p>
+
+      <h2 class="product__title" data-reveal style="--reveal-delay: 60ms">
+        Sabor casero,<br />estándar profesional
+      </h2>
+
+      <p class="lede" data-reveal style="--reveal-delay: 120ms">
+        Nuestros panes para hamburguesa están elaborados en obrador propio,
+        combinando técnicas tradicionales con ingredientes selectos. Cada lote
+        refleja el compromiso con la excelencia y el sabor auténtico que
+        distingue tu oferta gastronómica.
+      </p>
+
+      <dl class="product__specs" data-reveal style="--reveal-delay: 180ms">
+        {
+          specs.map((s) => (
+            <div class="product__spec">
+              <dt>{s.k}</dt>
+              <dd>{s.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <a class="product__link" href="#contacto" data-reveal style="--reveal-delay: 240ms">
+        Solicitar tarifa y muestras
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .product__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+  }
+
+  .product__media {
+    position: relative;
+    margin: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .product__media :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .product__media figcaption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 3.5rem 1.5rem 1.25rem;
+    font-size: var(--step--1);
+    color: var(--cream-dim);
+    background: linear-gradient(to top, color-mix(in srgb, var(--ink) 92%, transparent), transparent);
+  }
+
+  .product__title {
+    font-size: var(--step-4);
+    margin-bottom: 1.5rem;
+  }
+
+  .product__specs {
+    margin: 2.5rem 0 2rem;
+    border-top: 1px solid var(--ink-3);
+  }
+
+  .product__spec {
+    display: grid;
+    grid-template-columns: minmax(7rem, 12rem) 1fr;
+    gap: 1rem;
+    padding: 0.95rem 0;
+    border-bottom: 1px solid var(--ink-3);
+  }
+
+  .product__spec dt {
+    font-size: var(--step--1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cream-faint);
+  }
+
+  .product__spec dd {
+    margin: 0;
+    color: var(--cream);
+  }
+
+  .product__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    font-weight: 600;
+    color: var(--crust);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--crust) 40%, transparent);
+    padding-bottom: 0.3em;
+    transition: gap 0.3s var(--ease-out);
+  }
+
+  .product__link:hover {
+    gap: 1em;
+    border-bottom-color: var(--crust);
+  }
+
+  @media (max-width: 900px) {
+    .product__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .product__title {
+      font-size: var(--step-3);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .product__spec {
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+    }
+  }
+</style>

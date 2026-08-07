@@ -1,0 +1,135 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <div class="site-footer__brand">
+      <Image src={logo} alt="" width={140} height={140} loading="lazy" />
+      <p>
+        Pan artesanal para hamburguesa,<br />elaborado en obrador propio.
+      </p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="Pie de página">
+      <h2>Web</h2>
+      <ul>
+        <li><a href="#producto">El pan</a></li>
+        <li><a href="#proceso">Proceso</a></li>
+        <li><a href="#obrador">Obrador</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-footer__contact">
+      <h2>Contacto</h2>
+      <ul>
+        <li>
+          <a href="https://wa.me/34611650655" target="_blank" rel="noopener">
+            +34 611 650 655
+          </a>
+        </li>
+        <li><a href="mailto:panespatagonia@gmail.com">panespatagonia@gmail.com</a></li>
+        <li>
+          <a href="https://www.instagram.com/panespatagonia" target="_blank" rel="noopener">
+            Instagram
+          </a>
+        </li>
+        <li>
+          <a href="https://www.facebook.com/panespatagonia" target="_blank" rel="noopener">
+            Facebook
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap site-footer__legal">
+    <p>© {year} Panes Patagonia. Todos los derechos reservados.</p>
+    <a href="#top">Volver arriba ↑</a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-top: clamp(3.5rem, 7vw, 6rem);
+    padding-bottom: 2rem;
+    background: var(--ink);
+    border-top: 1px solid var(--ink-3);
+  }
+
+  .site-footer__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .site-footer__brand :global(img) {
+    width: 3.5rem;
+    height: auto;
+    margin-bottom: 1.25rem;
+  }
+
+  .site-footer__brand p {
+    color: var(--cream-dim);
+    font-size: var(--step--1);
+  }
+
+  h2 {
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cream-faint);
+    margin: 0 0 1.1rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  a {
+    font-size: var(--step--1);
+    color: var(--cream-dim);
+    text-decoration: none;
+    transition: color 0.25s var(--ease-out);
+  }
+
+  a:hover {
+    color: var(--crust);
+  }
+
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--ink-3);
+    font-size: 0.8rem;
+    color: var(--cream-faint);
+  }
+
+  .site-footer__legal p {
+    margin: 0;
+  }
+
+  @media (max-width: 720px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .site-footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,0 +1,151 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+
+const links = [
+  { href: '#producto', label: 'El pan' },
+  { href: '#proceso', label: 'Proceso' },
+  { href: '#obrador', label: 'Obrador' },
+  { href: '#contacto', label: 'Contacto' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="wrap site-header__inner">
+    <a href="#top" class="site-header__brand" aria-label="Panes Patagonia, inicio">
+      <Image src={logo} alt="" width={120} height={120} loading="eager" />
+      <span class="site-header__name">
+        <strong>Panes</strong>
+        <em>Patagonia</em>
+      </span>
+    </a>
+
+    <nav class="site-header__nav" aria-label="Principal">
+      <ul>
+        {
+          links.map((l) => (
+            <li>
+              <a href={l.href}>{l.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a
+      class="btn site-header__cta"
+      href="https://wa.me/34611650655"
+      target="_blank"
+      rel="noopener"
+    >
+      Pedir muestras
+    </a>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    padding-block: 1rem;
+    transition:
+      background-color 0.4s var(--ease-out),
+      backdrop-filter 0.4s var(--ease-out),
+      border-color 0.4s var(--ease-out),
+      padding 0.4s var(--ease-out);
+    border-bottom: 1px solid transparent;
+  }
+
+  .site-header[data-scrolled] {
+    padding-block: 0.6rem;
+    background: color-mix(in srgb, var(--ink) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+    border-bottom-color: color-mix(in srgb, var(--cream) 10%, transparent);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  .site-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .site-header__brand :global(img) {
+    width: clamp(2.2rem, 4vw, 2.75rem);
+    height: auto;
+  }
+
+  .site-header__name {
+    display: grid;
+    line-height: 1.05;
+  }
+
+  .site-header__name strong {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+
+  .site-header__name em {
+    font-style: normal;
+    font-size: 0.66rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--crust);
+  }
+
+  .site-header__nav ul {
+    display: flex;
+    gap: clamp(1rem, 2.4vw, 2rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-header__nav a {
+    font-size: var(--step--1);
+    color: var(--cream-dim);
+    text-decoration: none;
+    transition: color 0.25s var(--ease-out);
+  }
+
+  .site-header__nav a:hover {
+    color: var(--cream);
+  }
+
+  .site-header__cta {
+    flex: none;
+  }
+
+  @media (max-width: 860px) {
+    .site-header__nav {
+      display: none;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .site-header__cta {
+      padding: 0.75em 1.1em;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector('[data-header]');
+  if (header) {
+    const sync = () => header.toggleAttribute('data-scrolled', window.scrollY > 24);
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+  }
+</script>

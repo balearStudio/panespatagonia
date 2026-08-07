@@ -1,0 +1,131 @@
+---
+import { Image } from 'astro:assets';
+import formado from '../assets/formado-a-mano.jpg';
+import amasadora from '../assets/masa-amasadora.jpg';
+import bandejas from '../assets/masa-bandejas.jpg';
+import horneados from '../assets/panes-horneados.jpg';
+---
+
+<section class="obrador section" id="obrador" aria-labelledby="obrador-title">
+  <div class="wrap">
+    <div class="obrador__head">
+      <p class="eyebrow" data-reveal>El obrador</p>
+      <h2 id="obrador-title" class="obrador__title" data-reveal style="--reveal-delay: 60ms">
+        Aquí no hay línea de montaje.<br />Hay manos.
+      </h2>
+      <p class="lede" data-reveal style="--reveal-delay: 120ms">
+        Cada bollo se pesa, se bolea y se coloca en bandeja a mano. Es más lento
+        y por eso sabe distinto: la masa fermenta a su ritmo y llega al horno
+        cuando está lista, no cuando toca.
+      </p>
+    </div>
+
+    <figure class="obrador__wide" data-reveal>
+      <Image
+        src={formado}
+        alt="Manos de dos panaderos boleando porciones de masa sobre una mesa enharinada"
+        widths={[720, 1200, 1800]}
+        sizes="100vw"
+        quality={80}
+      />
+    </figure>
+
+    <div class="obrador__strip">
+      {
+        [
+          { img: amasadora, alt: 'Masa reposando en la amasadora', cap: 'Amasado' },
+          { img: bandejas, alt: 'Bandejas con bollos de masa en fermentación', cap: 'Fermentación' },
+          { img: horneados, alt: 'Carro con bandejas de panes ya horneados', cap: 'Horneado' },
+        ].map((item, i) => (
+          <figure class="obrador__card" data-reveal style={`--reveal-delay: ${i * 100}ms`}>
+            <Image
+              src={item.img}
+              alt={item.alt}
+              widths={[420, 700, 960]}
+              sizes="(max-width: 780px) 90vw, 30vw"
+              quality={78}
+            />
+            <figcaption>{item.cap}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .obrador__head {
+    max-width: 44rem;
+    margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  .obrador__title {
+    font-size: var(--step-4);
+    margin-bottom: 1.5rem;
+  }
+
+  .obrador__wide {
+    margin: 0 0 1.5rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .obrador__wide :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+  }
+
+  .obrador__strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .obrador__card {
+    margin: 0;
+  }
+
+  .obrador__card :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    transition: transform 0.7s var(--ease-out);
+  }
+
+  .obrador__card:hover :global(img) {
+    transform: scale(1.03);
+  }
+
+  .obrador__card figcaption {
+    margin-top: 0.9rem;
+    font-size: var(--step--1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cream-faint);
+  }
+
+  @media (max-width: 900px) {
+    .obrador__title {
+      font-size: var(--step-3);
+    }
+
+    .obrador__wide :global(img) {
+      aspect-ratio: 16 / 10;
+    }
+  }
+
+  @media (max-width: 780px) {
+    .obrador__strip {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .obrador__card :global(img) {
+      aspect-ratio: 16 / 11;
+    }
+  }
+</style>

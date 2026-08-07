@@ -1,0 +1,111 @@
+---
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/inter';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Panes Patagonia — Pan artesanal para hamburguesa',
+  description = 'Obrador artesanal de pan de hamburguesa para hostelería. Receta auténtica, ingredientes seleccionados y sabor casero para restaurantes que buscan destacar en cada detalle.',
+} = Astro.props;
+
+// El sitio se sirve bajo un subdirectorio (`base`), así que los ficheros de
+// /public necesitan el prefijo; una ruta absoluta "/og.jpg" no resolvería.
+const asset = (path: string) =>
+  `${import.meta.env.BASE_URL}/${path}`.replace(/([^:]\/)\/+/g, '$1');
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(asset('og.jpg'), Astro.site);
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Bakery',
+  name: 'Panes Patagonia',
+  description,
+  url: canonical.href,
+  image: ogImage.href,
+  email: 'panespatagonia@gmail.com',
+  telephone: '+34611650655',
+  priceRange: '$$',
+  servesCuisine: 'Panadería artesanal',
+  sameAs: [
+    'https://www.instagram.com/panespatagonia',
+    'https://www.facebook.com/panespatagonia',
+  ],
+};
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="icon" type="image/png" href={asset('favicon.png')} />
+    <link rel="apple-touch-icon" href={asset('favicon.png')} />
+    <meta name="theme-color" content="#16100b" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Panes Patagonia" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  </head>
+
+  <body>
+    <a href="#contenido" class="skip">Saltar al contenido</a>
+    <slot />
+
+    <style>
+      .skip {
+        position: absolute;
+        top: -100%;
+        left: var(--gutter);
+        z-index: 100;
+        padding: 0.75em 1.25em;
+        background: var(--crust);
+        color: var(--ink);
+        font-weight: 600;
+        border-radius: 0 0 var(--radius) var(--radius);
+        text-decoration: none;
+      }
+
+      .skip:focus {
+        top: 0;
+      }
+    </style>
+
+    <script>
+      // Aparición progresiva de los bloques al entrar en pantalla.
+      const targets = document.querySelectorAll('[data-reveal]');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        targets.forEach((el) => el.classList.add('is-visible'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { threshold: 0.15, rootMargin: '0px 0px -8% 0px' }
+        );
+        targets.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>
