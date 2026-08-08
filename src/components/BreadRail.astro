@@ -1,0 +1,242 @@
+---
+/**
+ * Barra de scroll con el pan: un bollo pequeño, fijo sobre la web, que baja
+ * por un raíl a la derecha mientras se hornea. Arranca al salir del hero y
+ * termina justo al llegar a contacto.
+ */
+const stages = [
+  { n: '01', title: 'La masa' },
+  { n: '02', title: 'La fermentación' },
+  { n: '03', title: 'El horno' },
+  { n: '04', title: 'El pan' },
+];
+---
+
+<aside class="rail" data-rail>
+  <span class="rail__line" aria-hidden="true">
+    <span class="rail__line-fill" data-rail-fill></span>
+  </span>
+
+  <div class="rail__thumb" aria-hidden="true">
+    <canvas class="rail__canvas" data-rail-canvas></canvas>
+  </div>
+
+  <p class="rail__label" aria-hidden="true">
+    {
+      stages.map((s, i) => (
+        <span class="rail__label-item" data-index={i}>
+          <span class="rail__label-n">{s.n}</span>
+          {s.title}
+        </span>
+      ))
+    }
+  </p>
+
+  {/* El raíl es decorativo; el proceso queda descrito aquí para lectores de pantalla. */}
+  <p class="visually-hidden">
+    Indicador de progreso: un pan que se hornea a medida que avanzas por la
+    página, pasando por masa, fermentación, horno y pan terminado.
+  </p>
+</aside>
+
+<style>
+  .rail {
+    position: fixed;
+    z-index: 40;
+    right: clamp(0.75rem, 1.8vw, 1.75rem);
+    top: 50%;
+    height: min(46vh, 26rem);
+    width: 5rem;
+    margin-top: -23vh;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-out);
+  }
+
+  .rail[data-visible] {
+    opacity: 1;
+  }
+
+  /* --- Raíl vertical --- */
+  .rail__line {
+    position: absolute;
+    z-index: 0; /* siempre por detrás del pan */
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: color-mix(in srgb, var(--cream) 14%, transparent);
+    transform: translateX(-50%);
+  }
+
+  .rail__line-fill {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 0%;
+    background: linear-gradient(var(--crust-deep), var(--crust), var(--crust-soft));
+  }
+
+  /* --- El pan, que hace de tirador --- */
+  .rail__thumb {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 50%;
+    width: 5rem;
+    height: 5rem;
+    margin-left: -2.5rem;
+    /* --y lo fija el script: 0 arriba del raíl, 100% abajo. */
+    transform: translateY(var(--y, 0px));
+  }
+
+  .rail__canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  /*
+    Etiqueta de la fase, escrita en vertical a la izquierda del pan: así ocupa
+    poco más de un centímetro de ancho y cabe en el margen.
+  */
+  .rail__label {
+    position: absolute;
+    top: 0;
+    right: 100%;
+    height: 5rem;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    transform: translateY(var(--y, 0px));
+  }
+
+  .rail__label-item {
+    grid-area: 1 / 1;
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-out);
+  }
+
+  .rail__label-item[data-active] {
+    opacity: 1;
+  }
+
+  .rail__label-n {
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    letter-spacing: 0;
+    color: var(--crust);
+  }
+
+  /*
+    Por debajo de 1200px ya no hay margen derecho que reservar (ver global.css):
+    el pan pasa a ser una insignia fija en la esquina inferior derecha, sin
+    raíl ni etiqueta.
+  */
+  @media (max-width: 1199px) {
+    .rail {
+      top: auto;
+      bottom: clamp(0.75rem, 3vw, 1.5rem);
+      right: clamp(0.5rem, 2vw, 1rem);
+      height: auto;
+      width: 4rem;
+      margin-top: 0;
+    }
+
+    .rail__line,
+    .rail__label {
+      display: none;
+    }
+
+    .rail__thumb {
+      position: static;
+      width: 4rem;
+      height: 4rem;
+      margin-left: 0;
+      transform: none;
+    }
+  }
+
+  /* Elemento puramente decorativo: se retira si se pide menos movimiento. */
+  @media (prefers-reduced-motion: reduce) {
+    .rail {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { createBreadScene } from '../scripts/bread.js';
+
+  const rail = document.querySelector<HTMLElement>('[data-rail]');
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-rail-canvas]');
+  const fill = document.querySelector<HTMLElement>('[data-rail-fill]');
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const contacto = document.querySelector<HTMLElement>('#contacto');
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (rail && canvas && hero && contacto && !reduced.matches) {
+    const labels = Array.from(rail.querySelectorAll<HTMLElement>('.rail__label-item'));
+
+    const scene = createBreadScene(canvas, {
+      transparent: true,
+      compact: true,
+      onStage: (i) => labels.forEach((el, idx) => el.toggleAttribute('data-active', idx === i)),
+    });
+
+    const docTop = (el: HTMLElement) => el.getBoundingClientRect().top + window.scrollY;
+
+    let start = 0;
+    let end = 1;
+    let travel = 0; // recorrido del pan por el raíl, en px
+
+    const measure = () => {
+      // El horneado ocupa desde el final del hero hasta el inicio de contacto.
+      start = docTop(hero) + hero.offsetHeight * 0.72;
+      end = docTop(contacto);
+      travel = Math.max(0, rail.offsetHeight - (rail.querySelector('.rail__thumb') as HTMLElement).offsetHeight);
+      scene.resize();
+    };
+
+    const sync = () => {
+      const head = window.scrollY + window.innerHeight * 0.5;
+      const span = Math.max(1, end - start);
+      const p = Math.min(1, Math.max(0, (head - start) / span));
+
+      scene.setProgress(p);
+      rail.style.setProperty('--y', `${p * travel}px`);
+      if (fill) fill.style.height = `${p * 100}%`;
+
+      // Aparece al salir del hero y se retira ya dentro de contacto, dejando
+      // ver un momento el pan terminado.
+      const visible = p > 0.01 && head < end + window.innerHeight * 0.35;
+      rail.toggleAttribute('data-visible', visible);
+      visible ? scene.start() : scene.stop();
+    };
+
+    measure();
+    scene.snap(0);
+    sync();
+
+    window.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', () => {
+      measure();
+      sync();
+    });
+
+    // Las imágenes al cargar cambian la altura de la página y desplazan el rango.
+    window.addEventListener('load', () => {
+      measure();
+      sync();
+    });
+  }
+</script>

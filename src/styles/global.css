@@ -135,6 +135,17 @@ button {
   max-width: var(--wrap-narrow);
 }
 
+/*
+  A partir de 1200px aparece el raíl del pan pegado al borde derecho. Se le
+  reserva ese margen en el contenido para que no llegue a solaparse nunca;
+  la cabecera y el pie quedan fuera porque el raíl no llega a su altura.
+*/
+@media (min-width: 1200px) {
+  main .wrap {
+    padding-right: calc(var(--gutter) + 6rem);
+  }
+}
+
 .section {
   padding-block: var(--section-y);
 }

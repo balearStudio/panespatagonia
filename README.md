@@ -28,7 +28,7 @@ Requiere Node 20 o superior.
 src/
   assets/            fotos y logo (Astro las optimiza a WebP en el build)
   components/
-    BreadBake.astro  sección del pan animado (sticky + canvas)
+    BreadRail.astro  el pan animado que hace de barra de scroll
     Header, Hero, Product, Pillars, Obrador, Contacto, Footer
   layouts/Base.astro  <head>, SEO, datos estructurados
   scripts/bread.js    la animación del pan, dibujada por código
@@ -39,16 +39,23 @@ public/              favicon, logo, og.jpg, robots.txt, CNAME
 ## La animación del pan
 
 `src/scripts/bread.js` dibuja el pan entero por código: no hay imágenes ni
-vídeo. Un progreso de 0 a 1, tomado de la posición del scroll dentro de
-`.bake__track`, controla volumen, color de corteza, brillo del huevo, sésamo,
-vapor y calor del horno.
+vídeo. Un progreso de 0 a 1 controla volumen, color de corteza, brillo del
+huevo, sésamo, vapor y calor del horno.
 
-Para ajustar el ritmo de las fases, toca los `smoothstep(inicio, fin, p)` de
-`render()`. Para alargar o acortar el recorrido, cambia `height` de
-`.bake__track` en `BreadBake.astro` (por defecto `460vh`).
+`BreadRail.astro` lo usa como barra de scroll: un bollo pequeño fijo sobre la
+web que baja por un raíl a la derecha mientras se hornea. El progreso va desde
+el final del hero hasta el inicio de contacto, así que el pan queda listo justo
+al llegar al formulario.
 
-Con `prefers-reduced-motion` la sección pasa a flujo normal: se muestra el pan
-ya horneado y las cuatro fases como lista.
+- **Ritmo de las fases**: los `smoothstep(inicio, fin, p)` de `render()`.
+- **Tramo de horneado**: `start` y `end` en el script de `BreadRail.astro`.
+- **Tamaño del pan**: `width`/`height` de `.rail__thumb`. Si lo agrandas, sube
+  también el margen reservado en `global.css` (ver abajo).
+
+A partir de 1200px el raíl vive en el margen derecho, y `global.css` reserva
+ese espacio con un `padding-right` sobre `main .wrap` para que nunca se solape
+con el contenido. Por debajo, el pan pasa a ser una insignia en la esquina
+inferior derecha. Con `prefers-reduced-motion` se oculta: es decorativo.
 
 ## Formulario de contacto
 

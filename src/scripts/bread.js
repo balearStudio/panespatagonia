@@ -73,7 +73,15 @@ function bunPath(ctx, cx, cy, rx, ryTop, ryBot, wobble) {
 
 /* --- escena ------------------------------------------------------------ */
 
-export function createBreadScene(canvas, { onStage } = {}) {
+/**
+ * @param {HTMLCanvasElement} canvas
+ * @param {object} opts
+ * @param {(stage:number)=>void} [opts.onStage]  aviso al cambiar de fase
+ * @param {boolean} [opts.transparent]  no pinta fondo (para superponer sobre la web)
+ * @param {boolean} [opts.compact]  tamaño reducido: agranda los rasgos para que
+ *   el sésamo y el pliegue sigan leyéndose a ~100 px
+ */
+export function createBreadScene(canvas, { onStage, transparent = false, compact = false } = {}) {
   const ctx = canvas.getContext('2d');
   const rand = makeRandom(20240607);
 
@@ -124,6 +132,20 @@ export function createBreadScene(canvas, { onStage } = {}) {
   /* --- capas de dibujo -------------------------------------------- */
 
   function drawBackground(p, heat, cx, cy) {
+    if (transparent) {
+      // Superpuesto sobre la web: solo el halo del horno, sin fondo.
+      ctx.clearRect(0, 0, W, H);
+      if (heat > 0.02) {
+        const r = Math.max(W, H) * 0.55;
+        const gh = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        gh.addColorStop(0, `rgba(255,150,50,${0.3 * heat})`);
+        gh.addColorStop(1, 'rgba(255,150,50,0)');
+        ctx.fillStyle = gh;
+        ctx.fillRect(0, 0, W, H);
+      }
+      return;
+    }
+
     ctx.fillStyle = '#16100b';
     ctx.fillRect(0, 0, W, H);
 
@@ -149,6 +171,7 @@ export function createBreadScene(canvas, { onStage } = {}) {
   }
 
   function drawDust(p) {
+    if (compact) return; // a este tamaño solo sería ruido
     const a = 1 - smoothstep(0.08, 0.34, p);
     if (a <= 0.01) return;
     ctx.save();
@@ -166,13 +189,15 @@ export function createBreadScene(canvas, { onStage } = {}) {
   function drawShadow(cx, cy, rx, ryBot, heat) {
     ctx.save();
     const sy = cy + ryBot * 0.92;
-    const g = ctx.createRadialGradient(cx, sy, 0, cx, sy, rx * 1.5);
+    // En compacto la sombra se recoge para no cortarse contra el borde.
+    const spread = compact ? 1.0 : 1.5;
+    const g = ctx.createRadialGradient(cx, sy, 0, cx, sy, rx * spread);
     g.addColorStop(0, `rgba(8,4,2,${0.55 + heat * 0.12})`);
     g.addColorStop(0.6, 'rgba(8,4,2,0.18)');
     g.addColorStop(1, 'rgba(8,4,2,0)');
     ctx.fillStyle = g;
     ctx.beginPath();
-    ctx.ellipse(cx, sy, rx * 1.45, ryBot * 0.5 + rx * 0.08, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx, sy, rx * spread * 0.97, ryBot * 0.5 + rx * 0.08, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
@@ -286,7 +311,9 @@ export function createBreadScene(canvas, { onStage } = {}) {
     // Cámara ligeramente elevada: define qué semillas quedan a la vista.
     const camY = 0.62;
     const camZ = 0.78;
-    const seedR = rx * 0.019;
+    // En pequeño el sésamo a escala real desaparecería (menos de 1 px), pero
+    // pasarse lo convierte en una costra: 0.032 es el punto donde se lee.
+    const seedR = rx * (compact ? 0.032 : 0.019);
 
     ctx.save();
     for (const s of seeds) {
@@ -351,6 +378,9 @@ export function createBreadScene(canvas, { onStage } = {}) {
     ctx.globalCompositeOperation = 'screen';
 
     const PUFFS = 16;
+    // En compacto el vapor sube menos: si no, se cortaría contra el borde.
+    const reach = compact ? 0.8 : 1.6;
+
     for (let k = 0; k < 4; k++) {
       const ph = k * 2.1 + 0.4;
       const ox = (k - 1.5) * rx * 0.36;
@@ -359,8 +389,8 @@ export function createBreadScene(canvas, { onStage } = {}) {
       for (let i = 0; i < PUFFS; i++) {
         const t = i / (PUFFS - 1); // 0 junto al pan, 1 arriba del todo
         const x = cx + ox + Math.sin(t * 3.4 + time * 0.75 + ph) * rx * 0.2 * t;
-        const y = cy - ryTop * 0.78 - t * rx * 1.6;
-        const r = rx * (0.07 + t * 0.26);
+        const y = cy - ryTop * 0.78 - t * rx * reach;
+        const r = rx * (0.07 + t * (compact ? 0.16 : 0.26));
 
         // Entra desde abajo, se disipa arriba.
         const alpha = heat * 0.075 * pulse * Math.sin(Math.PI * Math.min(1, t * 1.2));
@@ -377,6 +407,7 @@ export function createBreadScene(canvas, { onStage } = {}) {
   }
 
   function drawVignette(cx, cy) {
+    if (transparent) return;
     const g = ctx.createRadialGradient(
       cx,
       cy,
@@ -403,20 +434,23 @@ export function createBreadScene(canvas, { onStage } = {}) {
     // En pantallas anchas el pan se aparta a la derecha para dejar la columna
     // izquierda al texto; en móvil se centra y se agranda.
     const narrow = W < 860;
-    const solo = centered || narrow;
+    const solo = compact || centered || narrow;
 
     // La masa arranca como una bola boleada (casi redonda) y acaba como un
     // bollo ancho y bajo: el ancho crece más que el alto.
-    const unit = narrow
-      ? Math.min(W * 0.78, H * 0.45)
-      : Math.min(W * 0.5, H * (centered ? 0.86 : 0.72));
+    const unit = compact
+      ? Math.min(W, H) * 1.24
+      : narrow
+        ? Math.min(W * 0.78, H * 0.45)
+        : Math.min(W * 0.5, H * (centered ? 0.86 : 0.72));
     const rx = unit * 0.34 * lerp(0.74, 0.98, proof) * lerp(1, 1.09, spring);
     const ryTop = unit * 0.34 * lerp(0.54, 0.6, proof) * lerp(1, 1.12, spring);
     const ryBot = ryTop * lerp(0.55, 0.32, proof);
     const wobble = lerp(0.045, 0.012, smoothstep(0.05, 0.55, p));
 
     const cx = solo ? W * 0.5 : W * 0.68;
-    const cy = (solo ? H * 0.47 : H * 0.54) + ryTop * 0.25;
+    // En compacto se baja el pan para dejar sitio al vapor por encima.
+    const cy = compact ? H * 0.66 : (solo ? H * 0.47 : H * 0.54) + ryTop * 0.25;
 
     drawBackground(p, heat, cx, cy);
     drawDust(p);
