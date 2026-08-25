@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panes Patagonia — Pan artesanal para hostelería</title>
+<meta name="description" content="Pan artesanal de hamburguesa, elaborado en obrador propio y servido a la hostelería de toda España.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter+Tight:wght@300;400;500;600&family=Saira+Condensed:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">Patagonia</div>
+
+  <nav class="main-nav" id="mainNav">
+    <div class="nav-word">Menú</div>
+    <div class="nav-links">
+      <a href="#panes">Panes</a>
+      <a href="#nosotros">Nosotros</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </nav>
+
+  <a href="https://wa.me/34611650655" class="nav-cta">Hablemos</a>
+</header>
+
+<div class="nav-overlay" id="navOverlay">
+  <div class="nav-overlay-links">
+    <a href="#panes">Panes</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#contacto">Contacto</a>
+    <div class="overlay-hint">Toca para cerrar</div>
+  </div>
+</div>
+
+<main>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-line">Panes</div>
+      <div class="hero-video-gap"></div>
+      <div class="hero-line">Patagonia</div>
+      <div class="hero-video-wrap">
+        <video class="hero-video" id="heroVideo" src="uploads/magnific_video-background-removal_vQqGduda47.webm" autoplay loop muted playsinline></video>
+      </div>
+    </div>
+    <div class="hero-sub">
+      <p>Pan artesanal de hamburguesa, elaborado en obrador propio y servido a la hostelería de toda España.</p>
+    </div>
+  </section>
+
+  <section id="panes" class="panes-section">
+    <div class="panes-inner">
+
+      <div class="bread-media" id="breadMedia">
+        <div class="bread-wheel" id="breadWheel">
+          <img class="bread-img" data-i="0" src="uploads/avena%20no%20background.png" alt="Pan de Avena">
+          <img class="bread-img" data-i="1" src="uploads/sesamo%20no%20background.png" alt="Sésamo Negro">
+          <img class="bread-img" data-i="2" src="uploads/hotdog%20no%20background.png" alt="Pan de Perrito">
+        </div>
+        <div class="bread-counter" id="breadCounter">01 / 03</div>
+      </div>
+
+      <div class="bread-text">
+        <div class="eyebrow">Nuestros panes</div>
+        <div class="text-ring">
+          <div class="text-ring-inner" id="textRingInner">
+            <div class="bread-copy" data-i="0">
+              <h2>Pan de Avena</h2>
+              <p>Copos de avena tostados sobre una miga tierna y jugosa. Su dulzor discreto equilibra carnes intensas y salsas potentes sin robarles el protagonismo.</p>
+            </div>
+            <div class="bread-copy" data-i="1">
+              <h2>Sésamo Negro</h2>
+              <p>Gran contraste de sabores gracias al sésamo negro: nota tostada, ligeramente amarga, sobre una corteza brillante que aguanta el bocado hasta el final.</p>
+            </div>
+            <div class="bread-copy" data-i="2">
+              <h2>Pan de Perrito</h2>
+              <p>Miga larga y elástica, con brillo de mantequilla. Pensado para aguantar salsa y calor sin deshacerse en la mano del cliente.</p>
+            </div>
+          </div>
+        </div>
+        <div class="swipe-hint">Desliza</div>
+      </div>
+
+    </div>
+    <button class="wheel-arrow wheel-arrow--prev" id="prevBread" aria-label="Pan anterior">←</button>
+    <button class="wheel-arrow wheel-arrow--next" id="nextBread" aria-label="Siguiente pan">→</button>
+  </section>
+
+  <section id="nosotros" class="nosotros-section">
+    <div class="nosotros-inner">
+
+      <div class="nosotros-intro">
+        <div class="intro-text">
+          <div class="eyebrow">Por qué nosotros</div>
+          <h2>El pan no es<br>un detalle</h2>
+          <p class="lead">Es lo primero y lo último que muerde tu cliente. Desde 2020 amasamos con técnica tradicional e ingredientes selectos, y cada lote sale con el mismo estándar: miga que aguanta, corteza que no se rinde.</p>
+          <p class="muted">Trabajamos solo con hostelería. Eso nos deja tiempo para hacer una sola cosa bien.</p>
+        </div>
+        <div class="obrador-placeholder">
+          <span>[ pendiente ] plano general del obrador, 16:9</span>
+        </div>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar-img"><img src="uploads/1%20receta%20autentica.png" alt="Receta Auténtica" loading="lazy"></div>
+          <h3>Receta Auténtica</h3>
+          <p>Una fórmula propia, ajustada lote a lote desde el primer día. Sin mezclas preparadas.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-img"><img src="uploads/2%20ingredientes%20seleccionados.png" alt="Ingredientes Seleccionados" loading="lazy"></div>
+          <h3>Ingredientes Seleccionados</h3>
+          <p>Harina, mantequilla y huevo de proveedores fijos. Solo lo que hace falta.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-img"><img src="uploads/3%20servicio%20a%20hosteleria.png" alt="Servicio a Hostelería" loading="lazy"></div>
+          <h3>Servicio a Hostelería</h3>
+          <p>Formatos, volúmenes y entregas ajustados al ritmo de tu cocina.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-img"><img src="uploads/4%20elaboracion%20artesanal.png" alt="Elaboración Artesanal" loading="lazy"></div>
+          <h3>Elaboración Artesanal</h3>
+          <p>Fermentación lenta y horneado por lotes. Cada pan pasa por unas manos.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="contacto" class="contact-section">
+    <div class="contact-inner">
+
+      <div class="contact-info">
+        <div class="eyebrow eyebrow--teal">Sin compromiso</div>
+        <h2>Pregunta<br>lo que sea</h2>
+        <p class="lead">No necesitas saber cantidades ni fechas. Cuéntanos qué sirves y te decimos qué pan encaja. Si quieres probarlo antes, te mandamos muestras.</p>
+        <div class="contact-links">
+          <a href="https://wa.me/34611650655">WhatsApp · +34 611 650 655</a>
+          <a href="mailto:panespatagonia@gmail.com">panespatagonia@gmail.com</a>
+          <a href="https://www.instagram.com/panespatagonia/">Instagram · @panespatagonia</a>
+        </div>
+      </div>
+
+      <div class="contact-form-wrap">
+        <form id="contactForm" class="contact-form">
+          <input name="nombre" placeholder="Nombre y negocio" required>
+          <input name="email" type="email" placeholder="Email" required>
+          <input name="tel" placeholder="Teléfono">
+          <textarea name="msg" rows="3" placeholder="¿Qué te gustaría saber?"></textarea>
+          <button type="submit" id="submitBtn">Enviar</button>
+        </form>
+        <p class="form-note">Solo usamos estos datos para responderte. Nada más.</p>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-brand">Panes Patagonia · España</div>
+  <div class="footer-social">
+    <a href="https://www.instagram.com/panespatagonia/">Instagram</a>
+    <a href="https://www.facebook.com/panespatagonia/">Facebook</a>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

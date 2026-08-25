@@ -1,0 +1,751 @@
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #050505;
+}
+
+body {
+  font-family: 'Inter Tight', system-ui, sans-serif;
+  color: #f4f1ec;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: oklch(0.78 0.13 65);
+}
+
+::selection {
+  background: oklch(0.72 0.13 65);
+  color: #050505;
+}
+
+img {
+  max-width: 100%;
+}
+
+@keyframes hoverFloat {
+  0%, 100% { transform: translateY(-2.5%); }
+  50% { transform: translateY(2.5%); }
+}
+
+/* ---- scroll-driven dynamics: progress bar, line reveals, parallax ---- */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: oklch(0.72 0.13 65);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 90;
+  pointer-events: none;
+}
+
+/* heading line groups: one flex row per manual line-break, each holding its
+   own words — baseline-aligned so wrapping on narrow screens looks natural
+   instead of stretching to the row's cross-axis. */
+.line-mask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.26em;
+  row-gap: 0.04em;
+}
+
+.word-mask {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.word-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ---- responsive tokens (mobile-first; desktop overrides at 860px) ---- */
+:root {
+  --section-pad: 80px 22px 96px;
+  --bread-gap: 40px;
+  --hero-size: clamp(64px, 23vw, 150px);
+  --video-size: min(58vw, 260px);
+  --video-gap: 30vw;
+  --cols4: 1fr 1fr;
+  --gap4: 22px;
+  --pillar-top: 64px;
+  --intro2-cols: 1fr;
+  --h2-size: clamp(40px, 12vw, 64px);
+  --h3-size: 19px;
+  --body-size: 15px;
+  --contact-link-size: 17px;
+  --foot-pad: 40px 22px;
+}
+
+@media (min-width: 860px) {
+  :root {
+    --section-pad: 120px 46px 140px;
+    --bread-gap: 72px;
+    --hero-size: clamp(120px, 17.5vw, 300px);
+    --video-size: min(50vw, 60vh);
+    --video-gap: 9vw;
+    --cols4: repeat(4, 1fr);
+    --gap4: 34px;
+    --pillar-top: 110px;
+    --intro2-cols: 1.05fr 0.95fr;
+    --h2-size: clamp(56px, 5.4vw, 92px);
+    --h3-size: 23px;
+    --body-size: 17px;
+    --contact-link-size: 20px;
+    --foot-pad: 48px 46px;
+  }
+
+  .hero-sub {
+    margin-top: auto;
+    padding-top: 48px;
+  }
+}
+
+/* ---- header / nav ---- */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 80;
+  padding: 22px 26px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+.logo {
+  font-family: 'Saira Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  pointer-events: auto;
+}
+
+.main-nav {
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  padding: 6px 4px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* nav-word and nav-links both center on the same point inside .main-nav
+   (each pinned via its own translate(-50%, -50%)) so the hover/scroll swap
+   between them reads as one line growing sideways, never a dropdown. */
+.nav-word,
+.nav-links {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* base state = expanded (desktop, unscrolled); GSAP drives transitions from here */
+.nav-word {
+  font-family: 'Saira Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0;
+}
+
+.nav-links {
+  display: flex;
+  gap: 34px;
+  overflow: hidden;
+  opacity: 1;
+  max-width: none;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.nav-links a {
+  font-family: 'Saira Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nav-cta {
+  font-family: 'Saira Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  pointer-events: auto;
+}
+
+@media (max-width: 859px) {
+  .nav-word {
+    font-size: 20px;
+    letter-spacing: 0.16em;
+  }
+}
+
+/* ---- mobile nav overlay (GSAP toggles display + autoAlpha) ---- */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5,5,5,0.55);
+  backdrop-filter: blur(26px) saturate(0.8);
+  -webkit-backdrop-filter: blur(26px) saturate(0.8);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.nav-overlay-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.nav-overlay-links a {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: clamp(44px, 11vw, 90px);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.overlay-hint {
+  margin-top: 28px;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+/* ---- hero ---- */
+.hero {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 120px 20px 60px;
+  background: #050505;
+}
+
+.hero-inner {
+  position: relative;
+  width: 100%;
+  max-width: 1500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-line {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 0.82;
+  letter-spacing: -0.055em;
+  font-size: var(--hero-size);
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-video-gap {
+  height: var(--video-gap);
+}
+
+.hero-video-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.hero-media {
+  position: relative;
+  width: var(--video-size);
+  animation: hoverFloat 5.5s ease-in-out infinite;
+  filter: drop-shadow(0 50px 80px rgba(0,0,0,0.95));
+}
+
+/* Toggled off-screen: the drop-shadow filter forces a pixel-level repaint
+   on every animated frame (unlike a plain transform, which is GPU-only),
+   so freezing the animation and dropping the filter while it's out of view
+   removes an ongoing cost that would otherwise run forever in the
+   background and steal frame budget from other animations on the page. */
+.hero-media--paused {
+  animation-play-state: paused;
+  filter: none;
+}
+
+/* GSAP entrance-only wrapper — see comment in Hero.jsx */
+.hero-enter {
+  display: block;
+}
+
+.hero-poster {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+}
+
+.hero-sub {
+  margin-top: 64px;
+  padding: 0 26px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.hero-sub p {
+  max-width: 520px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 300;
+  color: rgba(244,241,236,0.6);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* ---- panes / bread carousel ---- */
+.panes-section {
+  background: #0a0a0a;
+  border-top: 1px solid rgba(244,241,236,0.09);
+  padding: var(--section-pad);
+  position: relative;
+  overflow: hidden;
+}
+
+.panes-inner {
+  max-width: 1500px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.eyebrow {
+  font-family: 'Saira Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: oklch(0.72 0.13 65);
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.pane-track {
+  position: relative;
+  height: clamp(360px, 52vw, 500px);
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.pane-card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(78vw, 340px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: grab;
+  font: inherit;
+  color: inherit;
+  will-change: transform, opacity;
+}
+
+.pane-card:active {
+  cursor: grabbing;
+}
+
+.pane-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  flex: 0 0 auto;
+}
+
+.pane-card-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.pane-card-copy {
+  margin-top: 18px;
+}
+
+.pane-card-copy h2 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-size: clamp(20px, 3.4vw, 28px);
+  margin: 0;
+}
+
+.pane-card-copy p {
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 300;
+  color: rgba(244,241,236,0.62);
+  max-width: 40ch;
+  margin: 10px auto 0;
+  text-wrap: pretty;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.pane-card--active .pane-card-copy p {
+  opacity: 1;
+}
+
+.wheel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 6;
+  background: none;
+  border: none;
+  padding: 16px;
+  cursor: pointer;
+  color: rgba(244,241,236,0.42);
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 26px;
+  line-height: 1;
+  transition: color .25s;
+}
+
+/* magnetic pull is applied to this inner glyph via GSAP, not the button
+   itself — the button's own transform is spoken for by the translateY(-50%)
+   vertical-centering above, and an inline GSAP transform would silently win
+   over that rule and knock the button out of center. */
+.wheel-arrow-glyph {
+  display: block;
+  will-change: transform;
+}
+
+.wheel-arrow--prev { left: 14px; }
+.wheel-arrow--next { right: 14px; }
+
+.wheel-arrow--prev:hover,
+.wheel-arrow--next:hover { color: #f4f1ec; }
+
+/* ---- nosotros ---- */
+.nosotros-section {
+  background: #050505;
+  border-top: 1px solid rgba(244,241,236,0.09);
+  padding: var(--section-pad);
+}
+
+.nosotros-inner {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.nosotros-intro {
+  display: grid;
+  grid-template-columns: var(--intro2-cols);
+  gap: var(--bread-gap);
+  align-items: end;
+}
+
+.intro-text h2 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  font-size: var(--h2-size);
+  margin: 0 0 30px;
+}
+
+.intro-text .lead {
+  font-size: var(--body-size);
+  line-height: 1.6;
+  font-weight: 300;
+  color: rgba(244,241,236,0.66);
+  max-width: 52ch;
+  margin: 0 0 18px;
+  text-wrap: pretty;
+}
+
+.intro-text .muted {
+  font-size: var(--body-size);
+  line-height: 1.6;
+  font-weight: 300;
+  color: rgba(244,241,236,0.42);
+  max-width: 52ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.obrador-shot {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(244,241,236,0.12);
+  overflow: hidden;
+}
+
+.obrador-shot img {
+  width: 100%;
+  height: 122%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+}
+
+.pillars {
+  display: grid;
+  grid-template-columns: var(--cols4);
+  gap: var(--gap4);
+  margin-top: var(--pillar-top);
+}
+
+.pillar {
+  position: relative;
+}
+
+.pillar-img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+/* parallax lives on this wrapper (GSAP-driven yPercent); the hover scale
+   below lives on the img itself, so the two transforms never fight over
+   the same inline style. */
+.pillar-img-parallax {
+  width: 100%;
+  height: 122%;
+  will-change: transform;
+}
+
+.pillar-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 1.1s cubic-bezier(.16,1,.3,1);
+}
+
+.pillar-img:hover img {
+  transform: scale(1.05);
+}
+
+.pillar h3 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  font-size: var(--h3-size);
+  line-height: 1.05;
+  margin: 20px 0 10px;
+}
+
+.pillar p {
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 300;
+  color: rgba(244,241,236,0.55);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* ---- contacto ---- */
+.contact-section {
+  background: #0a0a0a;
+  border-top: 1px solid rgba(244,241,236,0.09);
+  padding: var(--section-pad);
+}
+
+.contact-inner {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: var(--intro2-cols);
+  gap: var(--bread-gap);
+  align-items: start;
+}
+
+.contact-info h2 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
+  font-size: var(--h2-size);
+  margin: 0 0 28px;
+}
+
+.contact-info .lead {
+  font-size: var(--body-size);
+  line-height: 1.6;
+  font-weight: 300;
+  color: rgba(244,241,236,0.66);
+  max-width: 46ch;
+  margin: 0 0 34px;
+  text-wrap: pretty;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contact-links a {
+  font-family: 'Saira Condensed', sans-serif;
+  font-weight: 700;
+  font-size: var(--contact-link-size);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid rgba(244,241,236,0.16);
+}
+
+.contact-form input,
+.contact-form textarea {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(244,241,236,0.16);
+  color: #f4f1ec;
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  padding: 20px 2px;
+  outline: none;
+}
+
+.contact-form textarea {
+  resize: vertical;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+  border-bottom-color: oklch(0.72 0.13 65);
+}
+
+.contact-form button {
+  margin-top: 30px;
+  align-self: flex-start;
+  background: #f4f1ec;
+  color: #050505;
+  border: none;
+  border-radius: 100px;
+  padding: 17px 34px;
+  font-family: 'Saira Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .25s;
+}
+
+.contact-form button:hover {
+  background: oklch(0.78 0.13 65);
+}
+
+.form-note {
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(244,241,236,0.32);
+  margin: 22px 0 0;
+  max-width: 44ch;
+}
+
+/* ---- footer ---- */
+.site-footer {
+  background: #050505;
+  border-top: 1px solid rgba(244,241,236,0.09);
+  padding: var(--foot-pad);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-brand {
+  font-family: 'Saira Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(244,241,236,0.5);
+}
+
+.footer-social {
+  display: flex;
+  gap: 22px;
+}
+
+.footer-social a {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(244,241,236,0.5);
+}
