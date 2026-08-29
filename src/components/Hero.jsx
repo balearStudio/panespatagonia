@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "../gsapSetup";
+import { asset } from "../assetUrl.js";
 
 export default function Hero() {
   const line1Ref = useRef(null);
@@ -101,14 +102,14 @@ export default function Hero() {
               <img
                 ref={posterRef}
                 className="hero-poster"
-                src="/uploads/hero_start_frame.png"
+                src={asset("/uploads/hero_start_frame.png")}
                 alt=""
                 aria-hidden="true"
               />
               <video
                 ref={videoRef}
                 className="hero-video"
-                poster="/uploads/hero_start_frame.png"
+                poster={asset("/uploads/hero_start_frame.png")}
                 autoPlay
                 loop
                 muted
@@ -120,8 +121,8 @@ export default function Hero() {
                     left a systematic alpha-channel floor (background never
                     quite reached 0) that showed up as a faint veil on iOS.
                     WebKit otherwise ignores the WebM alpha channel entirely. */}
-                <source src="/uploads/hero_video_alpha.mov" type="video/mp4; codecs=hvc1" />
-                <source src="/uploads/magnific_video-background-removal_vQqGduda47.webm" type="video/webm" />
+                <source src={asset("/uploads/hero_video_alpha.mov")} type="video/mp4; codecs=hvc1" />
+                <source src={asset("/uploads/magnific_video-background-removal_vQqGduda47.webm")} type="video/webm" />
               </video>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "../gsapSetup";
+import { asset } from "../assetUrl.js";
 import { PILLARS } from "../data";
 import RevealHeading from "./RevealHeading.jsx";
 import RevealText from "./RevealText.jsx";
@@ -159,7 +160,7 @@ export default function About() {
             <p className="muted" ref={mutedRef}>Trabajamos solo con hostelería. Eso nos deja tiempo para hacer una sola cosa bien.</p>
           </div>
           <div className="obrador-shot" ref={obradorWrapRef}>
-            <img ref={obradorImgRef} src="/uploads/obrador.png" alt="Obrador de Panes Patagonia" loading="lazy" />
+            <img ref={obradorImgRef} src={asset("/uploads/obrador.png")} alt="Obrador de Panes Patagonia" loading="lazy" />
           </div>
         </div>
 
